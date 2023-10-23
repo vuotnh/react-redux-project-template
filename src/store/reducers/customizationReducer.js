@@ -1,14 +1,14 @@
-import produce from 'immer';
+import { produce } from 'immer';
 // project imports
-import config from '../../config';
+// import config from '../../config';
 
 // action - state management
 import * as actionTypes from '../actions/customizationAction';
 
 export const initialState = {
   isOpen: [], // for active default menu
-  fontFamily: config.fontFamily,
-  borderRadius: config.borderRadius,
+  // fontFamily: config.fontFamily,
+  // borderRadius: config.borderRadius,
   opened: true,
   drawerToggle: !!localStorage.getItem('drawerToggle'),
 };
