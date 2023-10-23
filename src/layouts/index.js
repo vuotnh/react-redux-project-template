@@ -20,6 +20,7 @@ function Layouts({ children }) {
       navigate('/auth/login');
     } else {
       // navigate('/');
+      console.log('oke');
     }
   }, []);
 
