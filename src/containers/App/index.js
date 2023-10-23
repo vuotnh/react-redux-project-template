@@ -29,7 +29,6 @@ function App(props) {
   }, []);
   return (
     <Layouts>
-      <h1>Hello</h1>
       <Routes />
       {showLoading && <Loading />}
     </Layouts>
