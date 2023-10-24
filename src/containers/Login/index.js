@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -8,6 +8,7 @@ import { makeSelectPathName } from '../App/selectors';
 import { Card, TextField, FormHelperText, Typography, Divider, Grid, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Controller, useForm } from 'react-hook-form';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const useStyles = makeStyles(() => ({
   loginContainer: {
@@ -36,6 +37,31 @@ const useStyles = makeStyles(() => ({
 }));
 function LoginPage() {
   const classes = useStyles();
+  const handleLogin = async (data) => {
+    try {
+      const { access_token } = data;
+      const user_info_res = await fetch(
+        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            Accept: 'application/json',
+          },
+        },
+      );
+
+      const user_info = await user_info_res.json();
+      console.log(user_info);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: (response) => handleLogin(response),
+    onError: (error) => console.log('Login Failed:', error),
+  });
   const {
     handleSubmit,
     control,
@@ -109,7 +135,7 @@ function LoginPage() {
                 justifyContent: 'center',
                 display: 'flex',
                 marginTop: '30px',
-                marginBottom: '30px',
+                marginBottom: '10px',
               }}>
               <Button
                 variant="contained"
@@ -117,6 +143,24 @@ function LoginPage() {
                   width: '80%',
                 }}>
                 Login
+              </Button>
+            </Grid>
+
+            <Grid
+              item
+              sx={{
+                justifyContent: 'center',
+                display: 'flex',
+                marginTop: '10px',
+                marginBottom: '30px',
+              }}>
+              <Button
+                variant="contained"
+                sx={{
+                  width: '80%',
+                }}
+                onClick={() => loginWithGoogle()}>
+                Sign in with Google 🚀
               </Button>
             </Grid>
           </Grid>

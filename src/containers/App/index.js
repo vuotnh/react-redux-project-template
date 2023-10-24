@@ -29,7 +29,9 @@ function App(props) {
   }, []);
   return (
     <Layouts>
-      <Routes />
+      <React.Suspense fallback={<Loading />}>
+        <Routes />
+      </React.Suspense>
       {showLoading && <Loading />}
     </Layouts>
   );
