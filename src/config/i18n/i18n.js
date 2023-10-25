@@ -1,6 +1,6 @@
 import { use } from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import app from './containers/App/locales/vi.json';
+import app from '../../containers/App/locales/vi.json';
 
 const resources = {
   vi: {
