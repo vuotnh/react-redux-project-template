@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { store } from './store';
 import App from './App';
 import './index.css';
+import './config/i18n/i18n';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // https://duthanhduoc.com/blog/p5-giai-ngo-authentication-OAuth2

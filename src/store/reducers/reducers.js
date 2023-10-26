@@ -1,11 +1,13 @@
 import { combineReducers } from 'redux';
 import appReducer from '../../containers/App/reducer';
+import userPageReducer from '../../containers/UserPage/reducer';
 
 // ==============================|| COMBINE REDUCER ||============================== //
 
 const reducer = combineReducers({
   // globalData: appReducer,
   appStates: appReducer,
+  userPageStates: userPageReducer,
 });
 
 // export default reducer;

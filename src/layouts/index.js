@@ -16,10 +16,10 @@ function Layouts({ children }) {
 
   // check auth
   useEffect(() => {
-    if (localStorage.getItem('token') === null) {
+    if (localStorage.getItem('access_token') === null) {
       navigate('/auth/login');
     } else {
-      // navigate('/');
+      navigate('/home');
     }
   }, []);
 

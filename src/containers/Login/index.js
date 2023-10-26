@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable no-console */
+import React, { useEffect } from 'react';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -8,7 +9,10 @@ import { makeSelectPathName } from '../App/selectors';
 import { Card, TextField, FormHelperText, Typography, Divider, Grid, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router';
+import instance from '../../utils/axios';
 
 const useStyles = makeStyles(() => ({
   loginContainer: {
@@ -37,6 +41,15 @@ const useStyles = makeStyles(() => ({
 }));
 function LoginPage() {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  // useEffect(() => {
+  //   let token = localStorage.getItem('access_token');
+  //   if (token && token !== null) {
+  //     navigate('/');
+  //   }
+  // }, []);
   const handleLogin = async (data) => {
     try {
       const { access_token } = data;
@@ -73,7 +86,28 @@ function LoginPage() {
     },
   });
 
-  const onSubmit = () => {};
+  const onSubmit = async (data) => {
+    console.log(data);
+    const { email, password } = data;
+    const loginRes = await instance({
+      method: 'POST',
+      url: `${import.meta.env.VITE_API_URL}/auth/login`,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      data: {
+        email,
+        password,
+      },
+    });
+    if (loginRes.status === 200) {
+      const { access_token, expires_in } = loginRes.data;
+      localStorage.setItem('access_token', access_token);
+      localStorage.setItem('expires_in', expires_in);
+      navigate('/home');
+    }
+  };
   return (
     <div className={classes.loginContainer}>
       <Card className={classes.loginForm}>
@@ -81,7 +115,7 @@ function LoginPage() {
           style={{
             width: '100%',
           }}>
-          <Typography className={classes.formTitle}>Login form</Typography>
+          <Typography className={classes.formTitle}>{t('loginPage.loginForm')}</Typography>
         </div>
         <Divider />
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -93,31 +127,26 @@ function LoginPage() {
               marginTop: '30px',
               flexDirection: 'column',
             }}>
-            <Grid item sx={{ justifyContent: 'center', display: 'flex' }}>
+            <Grid
+              item
+              sx={{
+                justifyContent: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
               <Controller
                 name="email"
+                rules={{
+                  required: {
+                    value: true,
+                    message: t('loginPage.noEmpty'),
+                  },
+                }}
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <TextField
-                    label="email"
-                    value={value}
-                    onChange={onChange}
-                    sx={{
-                      width: '80%',
-                    }}
-                  />
-                )}
-              />
-              <FormHelperText error>{errors?.email?.message}</FormHelperText>
-            </Grid>
-
-            <Grid item sx={{ justifyContent: 'center', display: 'flex', marginTop: '30px' }}>
-              <Controller
-                name="email"
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <TextField
-                    label="email"
+                    label={t('loginPage.email')}
                     value={value}
                     onChange={onChange}
                     sx={{
@@ -135,14 +164,42 @@ function LoginPage() {
                 justifyContent: 'center',
                 display: 'flex',
                 marginTop: '30px',
+                alignItems: 'center',
+                flexDirection: 'column',
+              }}>
+              <Controller
+                name="password"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    label={t('loginPage.password')}
+                    value={value}
+                    onChange={onChange}
+                    type="password"
+                    sx={{
+                      width: '80%',
+                    }}
+                  />
+                )}
+              />
+              <FormHelperText error>{errors?.password?.message}</FormHelperText>
+            </Grid>
+
+            <Grid
+              item
+              sx={{
+                justifyContent: 'center',
+                display: 'flex',
+                marginTop: '30px',
                 marginBottom: '10px',
               }}>
               <Button
                 variant="contained"
+                type="submit"
                 sx={{
                   width: '80%',
                 }}>
-                Login
+                {t('loginPage.signIn')}
               </Button>
             </Grid>
 
