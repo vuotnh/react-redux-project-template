@@ -42,7 +42,7 @@ function UserPage(props) {
     try {
       const res = await axiosInstance({
         method: 'DELETE',
-        url: `http://localhost:8082/user/deleteUser/${item.id}`,
+        url: `${import.meta.env.VITE_API_URL}/user/deleteUser/${item.id}`,
         headers: {
           'Content-Type': 'application/json',
         },

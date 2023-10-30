@@ -46,7 +46,7 @@ function CategoryPage(props) {
     try {
       const res = await axiosInstance({
         method: 'DELETE',
-        url: `http://localhost:8082/category/delete/${item.id}`,
+        url: `${import.meta.env.VITE_API_URL}/category/delete/${item.id}`,
         headers: {
           'Content-Type': 'application/json',
         },

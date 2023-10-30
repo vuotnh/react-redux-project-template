@@ -9,7 +9,7 @@ function ProductCard(props) {
       <CardMedia
         component="img"
         height="300"
-        image={`http://localhost:8082/storage/images/${product?.images[0]?.image?.name}`}
+        image={`${import.meta.env.VITE_API_URL}/storage/images/${product?.images[0]?.image?.name}`}
         alt="test"
       />
       <CardContent>
