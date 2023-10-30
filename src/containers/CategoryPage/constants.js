@@ -1,0 +1,3 @@
+export const GET_LIST_CATEGORY_ACTION = 'app/CategoryPage/GET_LIST_CATEGORY_ACTION';
+export const GET_LIST_CATEGORY_SUCCESS = 'app/CategoryPage/GET_LIST_CATEGORY_SUCCESS';
+export const GET_LIST_CATEGORY_FAILED = 'app/CategoryPage/GET_LIST_CATEGORY_FAILED';

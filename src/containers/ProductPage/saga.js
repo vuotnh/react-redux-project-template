@@ -1,14 +1,14 @@
 import { put, takeLatest, call } from 'redux-saga/effects';
 import request from '../../utils/request';
-import { getListUserSuccess, getListUserFailed } from './actions';
-import { GET_LIST_USER_ACTION } from './constants';
+import { getListProductFailed, getListProductSuccess } from './actions';
+import { GET_LIST_PRODUCT_ACTION } from './constants';
 import { showLoadingAction } from '../App/actions';
 
-export function* getListUserAction() {
+export function* getListProduct() {
   yield put(showLoadingAction(true));
   try {
     const apiUrl = import.meta.env.VITE_API_URL;
-    const data = yield call(request, `${apiUrl}/user/listUser`, {
+    const data = yield call(request, `${apiUrl}/product/list`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -16,14 +16,14 @@ export function* getListUserAction() {
       },
     });
     if (data) {
-      yield put(getListUserSuccess(data));
+      yield put(getListProductSuccess(data));
     }
   } catch (err) {
-    yield put(getListUserFailed(err));
+    yield put(getListProductFailed(err));
   }
   yield put(showLoadingAction(false));
 }
 
-export default function* UserPageSaga() {
-  yield takeLatest(GET_LIST_USER_ACTION, getListUserAction);
+export default function* ProductPageSaga() {
+  yield takeLatest(GET_LIST_PRODUCT_ACTION, getListProduct);
 }

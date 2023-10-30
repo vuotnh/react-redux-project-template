@@ -28,12 +28,14 @@ function App(props) {
     }
   }, []);
   return (
-    <Layouts>
-      <React.Suspense fallback={<Loading />}>
-        <Routes />
-      </React.Suspense>
+    <>
+      <Layouts>
+        <React.Suspense fallback={<Loading />}>
+          <Routes />
+        </React.Suspense>
+      </Layouts>
       {showLoading && <Loading />}
-    </Layouts>
+    </>
   );
 }
 App.propTypes = {

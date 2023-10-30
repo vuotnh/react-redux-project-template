@@ -1,14 +1,14 @@
 import { put, takeLatest, call } from 'redux-saga/effects';
 import request from '../../utils/request';
-import { getListUserSuccess, getListUserFailed } from './actions';
-import { GET_LIST_USER_ACTION } from './constants';
+import { getListCategoryFailed, getListCategorySuccess } from './actions';
+import { GET_LIST_CATEGORY_ACTION } from './constants';
 import { showLoadingAction } from '../App/actions';
 
-export function* getListUserAction() {
+export function* getListCategoryAction() {
   yield put(showLoadingAction(true));
   try {
     const apiUrl = import.meta.env.VITE_API_URL;
-    const data = yield call(request, `${apiUrl}/user/listUser`, {
+    const data = yield call(request, `${apiUrl}/category/list`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -16,14 +16,14 @@ export function* getListUserAction() {
       },
     });
     if (data) {
-      yield put(getListUserSuccess(data));
+      yield put(getListCategorySuccess(data));
     }
   } catch (err) {
-    yield put(getListUserFailed(err));
+    yield put(getListCategoryFailed(err));
   }
   yield put(showLoadingAction(false));
 }
 
-export default function* UserPageSaga() {
-  yield takeLatest(GET_LIST_USER_ACTION, getListUserAction);
+export default function* CategoryPageSaga() {
+  yield takeLatest(GET_LIST_CATEGORY_ACTION, getListCategoryAction);
 }

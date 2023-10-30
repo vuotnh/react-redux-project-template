@@ -19,7 +19,7 @@ function Layouts({ children }) {
     if (localStorage.getItem('access_token') === null) {
       navigate('/auth/login');
     } else {
-      navigate('/home');
+      // navigate('/home');
     }
   }, []);
 

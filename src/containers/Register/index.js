@@ -1,19 +1,18 @@
 /* eslint-disable no-console */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import PropTypes from 'prop-types';
+import { enqueueSnackbar } from 'notistack';
 import makeSelectLoginPage from './selectors';
 import { makeSelectPathName } from '../App/selectors';
 import { Card, TextField, FormHelperText, Typography, Divider, Grid, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { enqueueSnackbar } from 'notistack';
-import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router';
-import instance from '../../utils/axios';
+import axiosInstance from '../../utils/axios';
 
 const useStyles = makeStyles(() => ({
   loginContainer: {
@@ -40,36 +39,11 @@ const useStyles = makeStyles(() => ({
     height: '30px !important',
   },
 }));
-function LoginPage() {
+function RegisterPage() {
   const classes = useStyles();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const handleLogin = async (data) => {
-    try {
-      const { access_token } = data;
-      const user_info_res = await fetch(
-        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-            Accept: 'application/json',
-          },
-        },
-      );
-
-      const user_info = await user_info_res.json();
-      console.log(user_info);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const loginWithGoogle = useGoogleLogin({
-    onSuccess: (response) => handleLogin(response),
-    onError: (error) => console.log('Login Failed:', error),
-  });
   const {
     handleSubmit,
     control,
@@ -78,15 +52,17 @@ function LoginPage() {
     defaultValues: {
       email: '',
       password: '',
+      firstName: '',
+      lastName: '',
     },
   });
 
   const onSubmit = async (data) => {
     try {
-      const { email, password } = data;
-      const loginRes = await instance({
+      const { email, password, firstName, lastName } = data;
+      const registerRes = await axiosInstance({
         method: 'POST',
-        url: `${import.meta.env.VITE_API_URL}/auth/login`,
+        url: `${import.meta.env.VITE_API_URL}/auth/register`,
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
@@ -94,18 +70,15 @@ function LoginPage() {
         data: {
           email,
           password,
+          firstName,
+          lastName,
         },
       });
-      if (loginRes.status === 200) {
-        const { access_token, expires_in } = loginRes.data;
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('expires_in', expires_in);
-        navigate('/home');
+      if (registerRes.status === 201) {
+        navigate('/auth/account-verify');
       }
     } catch (err) {
-      enqueueSnackbar(err?.response?.data?.message || 'Tài khoản hoặc mật khẩu bị sai', {
-        variant: 'error',
-      });
+      enqueueSnackbar(err?.response?.data?.message || 'Đăng ký thất bại', { variant: 'error' });
     }
   };
   return (
@@ -115,7 +88,7 @@ function LoginPage() {
           style={{
             width: '100%',
           }}>
-          <Typography className={classes.formTitle}>{t('loginPage.loginForm')}</Typography>
+          <Typography className={classes.formTitle}>Đăng ký</Typography>
         </div>
         <Divider />
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -164,6 +137,70 @@ function LoginPage() {
                 justifyContent: 'center',
                 display: 'flex',
                 marginTop: '30px',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+              <Controller
+                name="firstName"
+                rules={{
+                  required: {
+                    value: true,
+                    message: t('loginPage.noEmpty'),
+                  },
+                }}
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    label="Firstname"
+                    value={value}
+                    onChange={onChange}
+                    sx={{
+                      width: '80%',
+                    }}
+                  />
+                )}
+              />
+              <FormHelperText error>{errors?.firstName?.message}</FormHelperText>
+            </Grid>
+
+            <Grid
+              item
+              sx={{
+                justifyContent: 'center',
+                display: 'flex',
+                marginTop: '30px',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+              <Controller
+                name="lastName"
+                rules={{
+                  required: {
+                    value: true,
+                    message: t('loginPage.noEmpty'),
+                  },
+                }}
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    label="Lastname"
+                    value={value}
+                    onChange={onChange}
+                    sx={{
+                      width: '80%',
+                    }}
+                  />
+                )}
+              />
+              <FormHelperText error>{errors?.lastName?.message}</FormHelperText>
+            </Grid>
+
+            <Grid
+              item
+              sx={{
+                justifyContent: 'center',
+                display: 'flex',
+                marginTop: '30px',
                 alignItems: 'center',
                 flexDirection: 'column',
               }}>
@@ -199,27 +236,9 @@ function LoginPage() {
                 sx={{
                   width: '80%',
                 }}>
-                {t('loginPage.signIn')}
+                Register
               </Button>
             </Grid>
-
-            <Grid
-              item
-              sx={{
-                justifyContent: 'center',
-                display: 'flex',
-                marginTop: '10px',
-              }}>
-              <Button
-                variant="contained"
-                sx={{
-                  width: '80%',
-                }}
-                onClick={() => loginWithGoogle()}>
-                Sign in with Google 🚀
-              </Button>
-            </Grid>
-
             <Grid
               item
               sx={{
@@ -230,7 +249,7 @@ function LoginPage() {
               }}>
               <Typography
                 onClick={() => {
-                  navigate('/auth/register');
+                  navigate('/auth/login');
                 }}
                 sx={{
                   fontSize: '20px',
@@ -240,7 +259,7 @@ function LoginPage() {
                   textDecoration: 'underline',
                   cursor: 'pointer',
                 }}>
-                Create an account
+                Have an account
               </Typography>
             </Grid>
           </Grid>
@@ -250,7 +269,7 @@ function LoginPage() {
   );
 }
 
-LoginPage.propTypes = {
+RegisterPage.propTypes = {
   onLogin: PropTypes.func,
   onReset: PropTypes.func,
   loginPage: PropTypes.object,
@@ -270,4 +289,4 @@ function mapDispatchToProps(dispatch) {
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 
-export default compose(withConnect)(LoginPage);
+export default compose(withConnect)(RegisterPage);

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import makeSelectUserList from './selectors';
-import { getUserListAction } from './actions';
+import makeSelectCategoryList from './selectors';
+import { getListCategoryAction } from './actions';
 import { enqueueSnackbar } from 'notistack';
 import {
   Table,
@@ -20,8 +20,8 @@ import {
 import axiosInstance from '../../utils/axios';
 import AddEditModal from './AddEditModal';
 
-function UserPage(props) {
-  const { onGetListUser, userPageStates } = props;
+function CategoryPage(props) {
+  const { onGetListCategory, categoryPageStates } = props;
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -38,11 +38,15 @@ function UserPage(props) {
     setIsOpenModal(true);
   };
 
-  const handleDeleteUser = async (item) => {
+  const handleOpenAddModal = () => {
+    setIsOpenModal(true);
+  };
+
+  const handleDeleteCategory = async (item) => {
     try {
       const res = await axiosInstance({
         method: 'DELETE',
-        url: `http://localhost:8082/user/deleteUser/${item.id}`,
+        url: `http://localhost:8082/category/delete/${item.id}`,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -50,7 +54,7 @@ function UserPage(props) {
       if (res.status === 204) {
         enqueueSnackbar('Xoá thành công', { variant: 'success' });
         handleCloseDeleteDiaglog();
-        await onGetListUser();
+        await onGetListCategory();
       }
     } catch (err) {
       enqueueSnackbar('Xoá thất bại', { variant: 'error' });
@@ -58,11 +62,20 @@ function UserPage(props) {
   };
 
   useEffect(async () => {
-    await onGetListUser();
+    await onGetListCategory();
   }, []);
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <TableContainer sx={{ width: '90%', marginTop: '20px' }}>
+    <div style={{ width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+      <div style={{ width: '90%', marginTop: '20px' }}>
+        <button
+          type="button"
+          className="btn btn-primary bt-lg"
+          style={{ minWidth: '100px' }}
+          onClick={() => handleOpenAddModal()}>
+          Thêm mới
+        </button>
+      </div>
+      <TableContainer sx={{ width: '90%', marginTop: '10px' }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -73,10 +86,7 @@ function UserPage(props) {
                 <Typography sx={{ fontWeight: '700' }}>Tên</Typography>
               </TableCell>
               <TableCell>
-                <Typography sx={{ fontWeight: '700' }}>Email</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography sx={{ fontWeight: '700' }}>Số điện thoại</Typography>
+                <Typography sx={{ fontWeight: '700' }}>Mã</Typography>
               </TableCell>
               <TableCell>
                 <Typography sx={{ fontWeight: '700' }}>Hành động</Typography>
@@ -84,12 +94,11 @@ function UserPage(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {userPageStates.data?.data?.map((item, index) => (
-              <TableRow key={item.email}>
+            {categoryPageStates.data?.data?.map((item, index) => (
+              <TableRow key={item.id}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>{`${item.firstName} ${item.lastName}`}</TableCell>
-                <TableCell>{item.email || ''}</TableCell>
-                <TableCell>{item.phone || ''}</TableCell>
+                <TableCell>{item.name || ''}</TableCell>
+                <TableCell>{item.code || ''}</TableCell>
                 <TableCell>
                   <button className="btn btn-primary" onClick={() => handleOpenModal(item)}>
                     <i className="far fa-eye"></i>
@@ -123,7 +132,7 @@ function UserPage(props) {
             className="btn btn-danger btn-lg"
             autoFocus
             type="button"
-            onClick={() => handleDeleteUser(selectedItem)}>
+            onClick={() => handleDeleteCategory(selectedItem)}>
             Xoá
           </button>
         </DialogContent>
@@ -133,27 +142,27 @@ function UserPage(props) {
         setIsOpenModal={setIsOpenModal}
         dataEdit={dataEdit}
         setDataEdit={setDataEdit}
-        onGetListUser={onGetListUser}
+        onGetListCategory={onGetListCategory}
       />
     </div>
   );
 }
 
-UserPage.propTypes = {
-  onGetListUser: PropTypes.func,
+CategoryPage.propTypes = {
+  onGetListCategory: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
-  userPageStates: makeSelectUserList(),
+  categoryPageStates: makeSelectCategoryList(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
-    onGetListUser: () => {
-      dispatch(getUserListAction());
+    onGetListCategory: () => {
+      dispatch(getListCategoryAction());
     },
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserPage);
+export default connect(mapStateToProps, mapDispatchToProps)(CategoryPage);

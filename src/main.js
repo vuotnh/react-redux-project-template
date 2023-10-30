@@ -6,6 +6,8 @@ import { store } from './store';
 import App from './App';
 import './index.css';
 import './config/i18n/i18n';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // https://duthanhduoc.com/blog/p5-giai-ngo-authentication-OAuth2
