@@ -1,5 +1,4 @@
-import React from 'react';
-// import CircularProgress from '@mui/material/CircularProgress';
+import React, { useEffect } from 'react';
 import styles from './index.module.css';
 
 // const LoadingGiF = require('../../assets/images/Loading/Eclipse.svg');
@@ -16,10 +15,6 @@ function Loading() {
         backgroundColor: 'rgba(242, 242, 242, 0.3)',
         zIndex: 10000,
       }}>
-      {/* <CircularProgress
-        style={{ position: 'absolute', left: 'calc(50% - 1rem)', top: 'calc(50% - 1rem)' }}
-      /> */}
-      {console.log('loading....')}
       <div style={{ position: 'absolute', left: 'calc(50% - 1rem)', top: 'calc(50% - 1rem)' }}>
         {/* <img style={{ width: '100px' }} src={LoadingGiF.default} alt="loading" /> */}
         <div className={styles.loadingio_spinner_eclipse_urd3yi4xx0d}>

@@ -53,11 +53,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 function AddEditModal(props) {
-  const { isOpenModal, setIsOpenModal, dataEdit, setDataEdit } = props;
+  const { isOpenModal, setIsOpenModal, dataEdit, setDataEdit, onGetListProduct, onShowLoading } =
+    props;
   const classes = useStyles();
   const stackImageRef = useRef();
   const addButtonRef = useRef();
   const [imageFileList, setImageFileList] = useState([]);
+  const [removeFileList, setRemoveFileList] = useState([]);
   const {
     handleSubmit,
     control,
@@ -82,12 +84,21 @@ function AddEditModal(props) {
     if (listCategoryRes.status === 200) {
       setCategoryList(listCategoryRes.data?.data);
     }
+
+    return () => {
+      setCategoryList([]);
+    };
   }, []);
   const handleCloseModal = () => {
     setDataEdit(null);
     reset();
-    setValue('name', '');
-    setValue('code', '');
+    setValue('productName', '');
+    setValue('productDescription', '');
+    setValue('price', '');
+    setValue('discountRate', '');
+    setValue('categoryId', '');
+    setImageFileList([]);
+    setRemoveFileList([]);
     setIsOpenModal(false);
   };
 
@@ -116,7 +127,7 @@ function AddEditModal(props) {
             href="#"
             className="icon"
             title="User Profile"
-            onClick={() => removeThis(event, item.key)}
+            onClick={() => removeThis(event, item)}
             style={{
               marginLeft: '5px',
               color: 'white',
@@ -141,8 +152,11 @@ function AddEditModal(props) {
     );
   };
 
-  const removeThis = (event, key) => {
-    const newImageList = imageFileList.filter((item) => item.key !== key);
+  const removeThis = (event, fileItem) => {
+    if (fileItem.id) {
+      setRemoveFileList([...removeFileList, fileItem.id]);
+    }
+    const newImageList = imageFileList.filter((item) => item.key !== fileItem.key);
     setImageFileList(newImageList);
   };
 
@@ -166,45 +180,76 @@ function AddEditModal(props) {
   };
 
   const onSubmit = async (data) => {
-    // try {
-    //   const dataForm = {
-    //     name: data?.name || '',
-    //     code: data?.code || '',
-    //   };
-    //   if (dataEdit) {
-    //     const updateCategory = await axiosInstance({
-    //       method: 'PATCH',
-    //       url: `${import.meta.env.VITE_API_URL}/category/update/${dataEdit.id}`,
-    //       data: dataForm,
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //     });
-    //     if (updateCategory.status === 200) {
-    //       enqueueSnackbar('Thao tác thành công', { variant: 'success' });
-    //       await onGetListCategory();
-    //       handleCloseModal();
-    //     }
-    //   } else {
-    //     const createCategory = await axiosInstance({
-    //       method: 'POST',
-    //       url: `${import.meta.env.VITE_API_URL}/category/store`,
-    //       data: dataForm,
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //     });
-    //     if (createCategory.status === 201) {
-    //       enqueueSnackbar('Thao tác thành công', { variant: 'success' });
-    //       await onGetListCategory();
-    //       handleCloseModal();
-    //     }
-    //   }
-    // } catch (err) {
-    //   enqueueSnackbar(err?.message || 'Thao tác thất bại', { variant: 'error' });
-    // }
-    console.log(data);
-    console.log(imageFileList);
+    onShowLoading(true);
+    try {
+      const fileListFormData = new FormData();
+      let uploadedNewFile = [];
+      let isUploaded = false;
+      imageFileList.map((item) => {
+        if (!item.id) {
+          isUploaded = true;
+          fileListFormData.append('file[]', item);
+        }
+      });
+
+      if (isUploaded) {
+        const uploadedNewFileRes = await axiosInstance({
+          method: 'POST',
+          url: `${import.meta.env.VITE_API_URL}/file/uploadMultiple`,
+          data: fileListFormData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (uploadedNewFileRes.status === 200) {
+          uploadedNewFile = uploadedNewFileRes.data?.fileIds;
+        }
+      }
+
+      const dataForm = {
+        name: data?.productName || '',
+        description: data?.productDescription || '',
+        price: data?.price || '',
+        discountRate: data?.discountRate || '',
+        category_id: data?.categoryId?.id,
+        uploadedNewFile,
+        removeFileList,
+      };
+
+      if (dataEdit) {
+        const updateProduct = await axiosInstance({
+          method: 'PATCH',
+          url: `${import.meta.env.VITE_API_URL}/product/update/${dataEdit.id}`,
+          data: dataForm,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (updateProduct.status === 200) {
+          enqueueSnackbar('Thao tác thành công', { variant: 'success' });
+          await onGetListProduct();
+          handleCloseModal();
+        }
+      } else {
+        const createProduct = await axiosInstance({
+          method: 'POST',
+          url: `${import.meta.env.VITE_API_URL}/product/store`,
+          data: dataForm,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (createProduct.status === 201) {
+          enqueueSnackbar('Thao tác thành công', { variant: 'success' });
+          await onGetListProduct();
+          handleCloseModal();
+        }
+      }
+    } catch (err) {
+      enqueueSnackbar(err?.message || 'Thao tác thất bại', { variant: 'error' });
+    }
+    onShowLoading(false);
   };
   return (
     <Dialog open={isOpenModal} onClose={handleCloseModal} maxWidth="md" fullWidth>
@@ -437,6 +482,8 @@ AddEditModal.propTypes = {
   setIsOpenModal: PropTypes.func,
   dataEdit: PropTypes.object,
   setDataEdit: PropTypes.func,
+  onGetListProduct: PropTypes.func,
+  onShowLoading: PropTypes.func,
 };
 
 export default AddEditModal;

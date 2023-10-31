@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { useNavigate } from 'react-router-dom';
-import { makeSelectLoadingApp, makeSelectSnackbar, makeSelectUserData } from './selectors';
-import { getUserDataAction, setPathNameAction } from './actions';
+import { makeSelectLoading, makeSelectSnackbar, makeSelectUserData } from './selectors';
+import { getUserDataAction, setPathNameAction, showLoadingAction } from './actions';
 import Loading from '../../components/Loading';
 // routing
 import Routes from '../../routes';
@@ -13,7 +13,7 @@ import Routes from '../../routes';
 import Layouts from '../../layouts';
 
 function App(props) {
-  const { userData, onGetUserData, showLoading, onSetPathNameAction } = props;
+  const { userData, onGetUserData, loading, onSetPathNameAction } = props;
   const { pathname } = window.location;
   const navigate = useNavigate();
   useEffect(() => {
@@ -29,12 +29,12 @@ function App(props) {
   }, []);
   return (
     <>
+      {loading && <Loading />}
       <Layouts>
-        <React.Suspense fallback={<Loading />}>
+        <React.Suspense fallback={<></>}>
           <Routes />
         </React.Suspense>
       </Layouts>
-      {showLoading && <Loading />}
     </>
   );
 }
@@ -44,7 +44,7 @@ App.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
-  showLoading: makeSelectLoadingApp(),
+  loading: makeSelectLoading(),
   showSnackbar: makeSelectSnackbar(),
   userData: makeSelectUserData(),
 });
@@ -57,6 +57,9 @@ function mapDispatchToProps(dispatch) {
     },
     onSetPathNameAction: (pathname) => {
       dispatch(setPathNameAction(pathname));
+    },
+    onShowLoadingAction: (loading) => {
+      dispatch(showLoadingAction(loading));
     },
   };
 }

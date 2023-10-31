@@ -2,18 +2,23 @@ import React, { useState, useEffect } from 'react';
 import AddEditModal from './AddEditModal';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { enqueueSnackbar } from 'notistack';
+import { Grid, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import { createStructuredSelector } from 'reselect';
 import makeSelectProductPage from './selectors';
 import { getListProductAction } from './actions';
 import ProductCard from './ProductCard';
-import { Grid, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import useWindowDimensions from '../../hooks/windowDimensions';
+import axiosInstance from '../../utils/axios';
+import { showLoadingAction } from '../App/actions';
 
 function ProductPage(props) {
-  const { onGetListProduct, productPageStates } = props;
+  const { onGetListProduct, productPageStates, onShowLoading } = props;
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState();
   const [dataEdit, setDataEdit] = useState();
+  const windowSize = useWindowDimensions();
 
   useEffect(async () => {
     await onGetListProduct();
@@ -34,8 +39,23 @@ function ProductPage(props) {
     setOpenDeleteDialog(true);
   };
 
-  const handleDeleteProduct = () => {
-    console.log(selectedItem);
+  const handleDeleteProduct = async () => {
+    try {
+      const res = await axiosInstance({
+        method: 'DELETE',
+        url: `${import.meta.env.VITE_API_URL}/product/delete/${selectedItem.id}`,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (res.status === 204) {
+        enqueueSnackbar('Xoá thành công', { variant: 'success' });
+        handleCloseDeleteDiaglog();
+        await onGetListProduct();
+      }
+    } catch (err) {
+      enqueueSnackbar('Xoá thất bại', { variant: 'error' });
+    }
   };
 
   const handleOpenAddModal = () => {
@@ -43,7 +63,7 @@ function ProductPage(props) {
   };
 
   return (
-    <div style={{ backgroundColor: '#f8f8ff' }}>
+    <div style={{ backgroundColor: '#f8f8ff', width: `${windowSize.width - 270}px` }}>
       <button
         type="button"
         onClick={() => handleOpenAddModal()}
@@ -65,10 +85,12 @@ function ProductPage(props) {
               sm={6}
               key={item.id}
               sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <div
-                style={{ width: '90%', marginTop: '10px', marginBottom: '10px' }}
-                onClick={() => handleOpenModal(item)}>
-                <ProductCard product={item} handleOpenDeleteModal={handleOpenDeleteModal} />
+              <div style={{ width: '90%', marginTop: '10px', marginBottom: '10px' }}>
+                <ProductCard
+                  product={item}
+                  handleOpenDeleteModal={handleOpenDeleteModal}
+                  handleOpenModal={handleOpenModal}
+                />
               </div>
             </Grid>
           ))}
@@ -79,6 +101,8 @@ function ProductPage(props) {
         setIsOpenModal={setIsOpenModal}
         dataEdit={dataEdit}
         setDataEdit={setDataEdit}
+        onGetListProduct={onGetListProduct}
+        onShowLoading={onShowLoading}
       />
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDiaglog}>
         <DialogTitle>{'Bạn có chắc chắn xoá'}</DialogTitle>
@@ -116,6 +140,9 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     onGetListProduct: () => {
       dispatch(getListProductAction());
+    },
+    onShowLoading: (loading) => {
+      dispatch(showLoadingAction(loading));
     },
   };
 }

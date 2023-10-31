@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardMedia, Typography } from '@mui/mater
 import React from 'react';
 
 function ProductCard(props) {
-  const { product, handleOpenDeleteModal } = props;
+  const { product, handleOpenDeleteModal, handleOpenModal } = props;
   return (
     <Card sx={{ borderRadius: '20px' }}>
       <CardHeader title={product?.name} subheader={product?.category?.name} />
@@ -11,6 +11,7 @@ function ProductCard(props) {
         height="300"
         image={`${import.meta.env.VITE_API_URL}/storage/images/${product?.images[0]?.image?.name}`}
         alt="test"
+        onClick={() => handleOpenModal(product)}
       />
       <CardContent>
         <Typography component={'span'} variant="body2" color="text.secondary">

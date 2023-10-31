@@ -5,8 +5,8 @@ import { GET_LIST_CATEGORY_ACTION } from './constants';
 import { showLoadingAction } from '../App/actions';
 
 export function* getListCategoryAction() {
-  yield put(showLoadingAction(true));
   try {
+    yield put(showLoadingAction(true));
     const apiUrl = import.meta.env.VITE_API_URL;
     const data = yield call(request, `${apiUrl}/category/list`, {
       method: 'GET',

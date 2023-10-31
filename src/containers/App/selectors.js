@@ -5,7 +5,7 @@
 import { createSelector } from 'reselect';
 import { initialState } from './reducer';
 
-const selectGlobal = (state) => state.globalData || initialState;
+const selectGlobal = (state) => state.appStates || initialState;
 
 const makeSelectCurrentUser = () =>
   createSelector(selectGlobal, (globalState) => globalState.currentUser);
@@ -21,8 +21,7 @@ const makeSelectSnackbar = () =>
     snackbarMSG: globalState.snackbarMSG,
     variant: globalState.variant,
   }));
-const makeSelectLoadingApp = () =>
-  createSelector(selectGlobal, (globalState) => globalState.showLoading);
+
 const makeSelectUserData = () =>
   createSelector(selectGlobal, (globalState) => globalState.userData);
 
@@ -33,7 +32,6 @@ export {
   selectGlobal,
   makeSelectCurrentUser,
   makeSelectLoading,
-  makeSelectLoadingApp,
   makeSelectSnackbar,
   makeSelectUserData,
   makeSelectPathName,

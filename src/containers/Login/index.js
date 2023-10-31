@@ -14,6 +14,7 @@ import { enqueueSnackbar } from 'notistack';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router';
 import instance from '../../utils/axios';
+import { showLoadingAction } from '../App/actions';
 
 const useStyles = makeStyles(() => ({
   loginContainer: {
@@ -40,7 +41,8 @@ const useStyles = makeStyles(() => ({
     height: '30px !important',
   },
 }));
-function LoginPage() {
+function LoginPage(props) {
+  const { onShowLoading } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -82,6 +84,7 @@ function LoginPage() {
   });
 
   const onSubmit = async (data) => {
+    onShowLoading(true);
     try {
       const { email, password } = data;
       const loginRes = await instance({
@@ -107,6 +110,7 @@ function LoginPage() {
         variant: 'error',
       });
     }
+    onShowLoading(false);
   };
   return (
     <div className={classes.loginContainer}>
@@ -265,6 +269,9 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
+    onShowLoading: (loading) => {
+      dispatch(showLoadingAction(loading));
+    },
   };
 }
 

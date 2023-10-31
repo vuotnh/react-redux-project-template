@@ -19,7 +19,9 @@ const categoryPageReducer = (state = initialState, action = {}) =>
   produce(state, (draft) => {
     switch (action.type) {
       case GET_LIST_CATEGORY_ACTION:
-        draft.loading = true;
+        draft.loading = 'GET_LIST_CATEGORY_LOADING';
+        draft.error = null;
+        draft.success = null;
         break;
       case GET_LIST_CATEGORY_SUCCESS:
         draft.loading = false;

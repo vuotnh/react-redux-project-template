@@ -17,7 +17,6 @@ export const initialState = {
   error: false,
   success: false,
   language: 'vi',
-  showLoading: false,
   pathname: null,
   resetNoti: false,
 };
@@ -47,7 +46,7 @@ const appReducer = (state = initialState, action = {}) =>
         draft.language = action.lang;
         break;
       case SHOW_LOADING:
-        draft.showLoading = action.loading;
+        draft.loading = action.loading;
         break;
       case SET_PATHNAME:
         draft.pathname = action.pathname;
