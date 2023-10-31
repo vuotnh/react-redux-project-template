@@ -1,6 +1,6 @@
-import { put, takeLatest, call } from 'redux-saga/effects';
-import { getUserDataSuccess, getUserDataFailed } from './actions';
-import { GET_USERDATA_ACTION } from './constants';
+// import { put, takeLatest, call } from 'redux-saga/effects';
+// import { getUserDataSuccess, getUserDataFailed } from './actions';
+// import { GET_USERDATA_ACTION } from './constants';
 // import request from '../../utils/request';
 // import { USERDATA_URL } from '../../urlConfig';
 

@@ -76,7 +76,7 @@ function ProductPage(props) {
       </button>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Grid container sx={{ width: '95%' }}>
-          {productPageStates?.data?.data.map((item, index) => (
+          {productPageStates?.data?.data.map((item) => (
             <Grid
               item
               xs={12}

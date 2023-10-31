@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import styles from './index.module.css';
 
 // const LoadingGiF = require('../../assets/images/Loading/Eclipse.svg');

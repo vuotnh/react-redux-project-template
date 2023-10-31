@@ -1,26 +1,19 @@
-import {
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-  Typography,
-} from '@mui/material';
+import { ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BackupTableIcon from '@mui/icons-material/BackupTable';
 import InventoryIcon from '@mui/icons-material/Inventory';
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoImage from '../../assets/dark-logo.svg';
 
 function SideBar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  // const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleOpenSideBar = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  // const handleOpenSideBar = () => {
+  //   setMobileOpen(!mobileOpen);
+  // };
   const menuList = [
     {
       text: 'Home',
