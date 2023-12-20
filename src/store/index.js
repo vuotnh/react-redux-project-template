@@ -1,14 +1,13 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import rootReducer from './reducers/reducers';
 import rootSaga from './sagas/saga';
 
 // ==============================|| REDUX - MAIN STORE ||============================== //
+// apply saga middleware https://redux-saga.js.org/docs/introduction/BeginnerTutorial/
 const sagaMiddleware = createSagaMiddleware();
-// const composeEnhancers = compose;
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(sagaMiddleware)));
-const persister = 'Free';
+// tạo store dựa trên rootReducer
+const store = createStore(rootReducer, applyMiddleware(sagaMiddleware));
 
 sagaMiddleware.run(rootSaga);
-export { store, persister };
+export default store;

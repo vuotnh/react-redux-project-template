@@ -3,6 +3,7 @@ import appReducer from '../../containers/App/reducer';
 
 // ==============================|| COMBINE REDUCER ||============================== //
 
+// tạo một reducer tổng
 const reducer = combineReducers({
   // globalData: appReducer,
   appStates: appReducer,
