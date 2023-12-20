@@ -19,9 +19,10 @@ import {
 } from '@mui/material';
 import axiosInstance from '../../utils/axios';
 import AddEditModal from './AddEditModal';
+import { showLoadingAction } from '../App/actions';
 
 function UserPage(props) {
-  const { onGetListUser, userPageStates } = props;
+  const { onGetListUser, userPageStates, onShowLoading } = props;
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -134,6 +135,7 @@ function UserPage(props) {
         dataEdit={dataEdit}
         setDataEdit={setDataEdit}
         onGetListUser={onGetListUser}
+        onShowLoading={onShowLoading}
       />
     </div>
   );
@@ -152,6 +154,9 @@ function mapDispatchToProps(dispatch) {
     dispatch,
     onGetListUser: () => {
       dispatch(getUserListAction());
+    },
+    onShowLoading: (loading) => {
+      dispatch(showLoadingAction(loading));
     },
   };
 }

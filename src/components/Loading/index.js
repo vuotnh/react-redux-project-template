@@ -16,7 +16,6 @@ function Loading() {
         zIndex: 10000,
       }}>
       <div style={{ position: 'absolute', left: 'calc(50% - 1rem)', top: 'calc(50% - 1rem)' }}>
-        {/* <img style={{ width: '100px' }} src={LoadingGiF.default} alt="loading" /> */}
         <div className={styles.loadingio_spinner_eclipse_urd3yi4xx0d}>
           <div className={styles.ldio_w5sesydu2yk}>
             <div />

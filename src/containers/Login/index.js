@@ -1,11 +1,12 @@
 /* eslint-disable no-console */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import PropTypes from 'prop-types';
 import makeSelectLoginPage from './selectors';
 import { makeSelectPathName } from '../App/selectors';
+import CircularProgress from '@mui/material/CircularProgress';
 import { Card, TextField, FormHelperText, Typography, Divider, Grid, Button } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Controller, useForm } from 'react-hook-form';
@@ -44,8 +45,15 @@ const useStyles = makeStyles(() => ({
 function LoginPage(props) {
   const { onShowLoading } = props;
   const classes = useStyles();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (localStorage.getItem('access_token')) {
+      navigate(`/home`);
+    }
+  }, []);
 
   const handleLogin = async (data) => {
     try {
@@ -84,7 +92,8 @@ function LoginPage(props) {
   });
 
   const onSubmit = async (data) => {
-    onShowLoading(true);
+    // onShowLoading(true);
+    setIsLoading(true);
     try {
       const { email, password } = data;
       const loginRes = await instance({
@@ -100,17 +109,19 @@ function LoginPage(props) {
         },
       });
       if (loginRes.status === 200) {
+        setIsLoading(false);
         const { access_token, expires_in } = loginRes.data;
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('expires_in', expires_in);
         navigate('/home');
       }
     } catch (err) {
+      setIsLoading(false);
       enqueueSnackbar(err?.response?.data?.message || 'Tài khoản hoặc mật khẩu bị sai', {
         variant: 'error',
       });
     }
-    onShowLoading(false);
+    // onShowLoading(false);
   };
   return (
     <div className={classes.loginContainer}>
@@ -202,8 +213,9 @@ function LoginPage(props) {
                 type="submit"
                 sx={{
                   width: '80%',
+                  background: 'yellow',
                 }}>
-                {t('loginPage.signIn')}
+                {!isLoading ? t('loginPage.signIn') : <CircularProgress />}
               </Button>
             </Grid>
 

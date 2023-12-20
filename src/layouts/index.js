@@ -15,13 +15,13 @@ function Layouts({ children }) {
   }, [pathname]);
 
   // check auth
-  useEffect(() => {
-    if (localStorage.getItem('access_token') === null) {
-      navigate('/auth/login');
-    } else {
-      // navigate('/home');
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (localStorage.getItem('access_token') === null) {
+  //     navigate('/auth/login');
+  //   } else {
+  //     // navigate('/home');
+  //   }
+  // }, []);
 
   return children || null;
 }

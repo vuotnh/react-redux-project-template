@@ -28,7 +28,7 @@ instance.interceptors.response.use(
         // nếu refresh hết hạn thì đẩy vể login
         localStorage.removeItem('access_token');
         sessionStorage.clear();
-        window.location.assign('/auth/login');
+        // window.location.assign('/auth/login');
         return Promise.reject(e);
       }
     }
@@ -55,7 +55,7 @@ async function refreshToken() {
   } catch (err) {
     localStorage.removeItem('access_token');
     sessionStorage.clear();
-    window.location.assign('/auth/login');
+    // window.location.assign('/auth/login');
     return Promise.reject(err);
   }
 }

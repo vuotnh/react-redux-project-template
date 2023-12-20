@@ -6,6 +6,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoImage from '../../assets/dark-logo.svg';
+import axiosInstance from '../../utils/axios';
 
 function SideBar() {
   // const [mobileOpen, setMobileOpen] = useState(false);
@@ -81,6 +82,20 @@ function SideBar() {
     },
   ];
 
+  const logOutHandle = async () => {
+    const logOutRes = await axiosInstance({
+      url: `${import.meta.env.VITE_API_URL}/auth/logout`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (logOutRes.status === 204 || logOutRes.status === 200) {
+      localStorage.removeItem('access_token');
+      navigate('/auth/login');
+    }
+  };
+
   return (
     <div
       style={{
@@ -136,6 +151,21 @@ function SideBar() {
           </ListItemButton>
         </ListItem>
       ))}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          minHeight: '30px',
+          width: '270px',
+          textAlign: 'center',
+        }}>
+        <button
+          className="btn btn-primary"
+          style={{ marginBottom: '30px' }}
+          onClick={() => logOutHandle()}>
+          LogOut
+        </button>
+      </div>
     </div>
   );
 }

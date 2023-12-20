@@ -15,7 +15,8 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 
 function AddEditModal(props) {
-  const { isOpenModal, setIsOpenModal, dataEdit, setDataEdit, onGetListUser } = props;
+  const { isOpenModal, setIsOpenModal, dataEdit, setDataEdit, onGetListUser, onShowLoading } =
+    props;
   const imagePreviewRef = useRef();
   const {
     handleSubmit,
@@ -39,6 +40,7 @@ function AddEditModal(props) {
     setValue('lastName', '');
     setValue('phone', '');
     setValue('email', '');
+    setValue('avatarFile', null);
     setIsOpenModal(false);
   };
 
@@ -65,6 +67,7 @@ function AddEditModal(props) {
   };
 
   const onSubmit = async (data) => {
+    onShowLoading(true);
     try {
       const dataUpdate = {
         firstName: data?.firstName || '',
@@ -108,6 +111,7 @@ function AddEditModal(props) {
     } catch (err) {
       enqueueSnackbar(err?.message || 'Thao tác thất bại', { variant: 'error' });
     }
+    onShowLoading(false);
   };
   return (
     <Dialog open={isOpenModal} onClose={handleCloseModal} maxWidth="md" fullWidth>
@@ -328,6 +332,7 @@ AddEditModal.propTypes = {
   dataEdit: PropTypes.object,
   setDataEdit: PropTypes.func,
   onGetListUser: PropTypes.func,
+  onShowLoading: PropTypes.func,
 };
 
 export default AddEditModal;
