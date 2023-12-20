@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { makeSelectLoadingApp, makeSelectSnackbar, makeSelectUserData } from './selectors';
 import { getUserDataAction, setPathNameAction } from './actions';
 import Loading from '../../components/Loading';
@@ -14,27 +12,16 @@ import Routes from '../../routes';
 import Layouts from '../../layouts';
 
 function App(props) {
-  const { userData, onGetUserData, showLoading, onSetPathNameAction } = props;
-  const { pathname } = window.location;
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (userData === null && localStorage.getItem('token')) {
-      onGetUserData();
-      onSetPathNameAction(null);
-      if (pathname === '/auth/login') {
-        navigate('/');
-      }
-    } else {
-      onSetPathNameAction(pathname);
-    }
-  }, []);
+  const { showLoading } = props;
   return (
-    <Layouts>
-      <h1>{t('app.home')}</h1>
-      <Routes />
+    <>
       {showLoading && <Loading />}
-    </Layouts>
+      <Layouts>
+        <React.Suspense fallback={<></>}>
+          <Routes />
+        </React.Suspense>
+      </Layouts>
+    </>
   );
 }
 App.propTypes = {
